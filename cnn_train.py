@@ -16,9 +16,9 @@ input_size = (224,224,3)
 batch_size = 4
 steps_per_epoch = 1000
 epochs = 20
-train_dir = 'data/train_data'
+train_dir = 'data/train'
 train_json = 'data/json'
-val_dir = 'data/val_data'
+val_dir = 'data/val'
 val_json = 'data/json'
 
 

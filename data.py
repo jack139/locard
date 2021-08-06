@@ -15,15 +15,26 @@ def dataGenerator(data_path,json_path,target_size = (224,224)):
                 j = json.load(fp)
             ratio_x = target_size[0] / j['imageWidth']
             ratio_y = target_size[1] / j['imageHeight']
+
+            if j['shapes'][0]['label']=='card' and j['shapes'][1]['label']=='photo':
+                p1 = j['shapes'][0]['points']
+                p2 = j['shapes'][1]['points']
+            elif j['shapes'][0]['label']=='photo' and j['shapes'][1]['label']=='card':
+                p1 = j['shapes'][1]['points']
+                p2 = j['shapes'][0]['points']
+            else:
+                print('label err! ', i)
+                continue
+
             y = np.array([
-                j['shapes'][0]['points'][0][0]*ratio_x,
-                j['shapes'][0]['points'][0][1]*ratio_y,
-                j['shapes'][0]['points'][1][0]*ratio_x,
-                j['shapes'][0]['points'][1][1]*ratio_y,
-                j['shapes'][1]['points'][0][0]*ratio_x,
-                j['shapes'][1]['points'][0][1]*ratio_y,
-                j['shapes'][1]['points'][1][0]*ratio_x,
-                j['shapes'][1]['points'][1][1]*ratio_y,                
+                p1[0][0]*ratio_x, # card
+                p1[0][1]*ratio_y,
+                p1[1][0]*ratio_x,
+                p1[1][1]*ratio_y,
+                p2[0][0]*ratio_x, # photo
+                p2[0][1]*ratio_y,
+                p2[1][0]*ratio_x,
+                p2[1][1]*ratio_y,                
             ])
 
             # 准备图片
