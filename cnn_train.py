@@ -23,8 +23,8 @@ val_json = 'data/json'
 
 
 # 数据生成器
-train_generator = dataGenerator(train_dir, train_json, target_size=input_size[:2])
-val_generator = dataGenerator(val_dir, val_json, target_size=input_size[:2])
+train_generator = dataGenerator(train_dir, train_json, batch_size=batch_size, target_size=input_size[:2])
+val_generator = dataGenerator(val_dir, val_json, batch_size=batch_size, target_size=input_size[:2])
 
 
 # create the base pre-trained model
@@ -73,5 +73,7 @@ model_checkpoint = ModelCheckpoint("locard_%d_%d.hdf5"%(epochs,steps_per_epoch),
 model.fit_generator(train_generator,
     steps_per_epoch=steps_per_epoch,
     epochs=epochs,
+    validation_data=val_generator,
+    validation_steps=100,
     callbacks=[model_checkpoint]
 )
