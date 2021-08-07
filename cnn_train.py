@@ -4,7 +4,7 @@ import os
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 
 import numpy as np
-from keras.applications import ResNet50, MobileNetV2, VGG16
+from keras.applications import ResNet50, VGG16
 from keras.models import Model
 from keras.optimizers import Adam, SGD, RMSprop
 from keras.layers import Dense, Dropout, Input, Flatten
@@ -24,12 +24,11 @@ val_json = 'data/json'
 
 # 数据生成器
 train_generator = dataGenerator(train_dir, train_json, batch_size=batch_size, target_size=input_size[:2])
-val_generator = dataGenerator(val_dir, val_json, batch_size=batch_size, target_size=input_size[:2])
+val_generator = dataGenerator(val_dir, val_json, batch_size=4, target_size=input_size[:2])
 
 
 # create the base pre-trained model
 #base_model = ResNet50(weights='imagenet', input_shape=input_size, include_top=False)
-#base_model = MobileNetV2(weights=None, input_shape=input_size, include_top=False)
 base_model = VGG16(weights="imagenet", include_top=False, input_tensor=Input(shape=input_size))
 
 # freeze all VGG layers so they will *not* be updated during the
@@ -59,16 +58,9 @@ print(model.summary())
 # train the network for bounding box regression
 print("[INFO] training bounding box regressor...")
 
-# train the model on the new data for a few epochs
-#model.fit(train_generator,
-#        steps_per_epoch=steps_per_epoch,
-#        epochs=epochs,
-#        #validation_data=val_generator,
-#        #validation_steps=500
-#)
 
-model_checkpoint = ModelCheckpoint("locard_%d_%d.hdf5"%(epochs,steps_per_epoch), 
-    monitor='loss',verbose=1, save_best_only=True)
+model_checkpoint = ModelCheckpoint("locard_vgg16_b%d_e%d_%d.hdf5"%(batch_size,epochs,steps_per_epoch), 
+    monitor='val_loss',verbose=1, save_best_only=True)
 
 model.fit_generator(train_generator,
     steps_per_epoch=steps_per_epoch,

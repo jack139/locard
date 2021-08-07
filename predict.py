@@ -7,6 +7,10 @@ import numpy as np
 import cv2
 from keras.models import load_model
 
+#model = load_model("locard_resnet_b4_e20_1000.hdf5")
+model = load_model("locard_vgg16_b4_e20_1000.hdf5")
+#model = load_model("locard_vgg16_20_1000.hdf5")
+
 def read_img(test_path,target_size = (224,224)):
     img = cv2.imread(test_path)
     h, w = img.shape[:2]
@@ -24,13 +28,7 @@ def draw_box(test_path, p1, p2):
     cv2.imwrite('data/test_result.jpg', img)
 
 
-if __name__ == '__main__':
-    if len(sys.argv)<2:
-        print("usage: python %s <img_path>"%sys.argv[0])
-        sys.exit(2)
-
-    model = load_model("locard_20_1000.hdf5")
-    test_path = sys.argv[1]
+def predict(test_path):
     inputs, h, w = read_img(test_path)
     results = model.predict(inputs)
 
@@ -51,3 +49,11 @@ if __name__ == '__main__':
     print(results)
 
     draw_box(test_path, p1, p2)
+
+
+if __name__ == '__main__':
+    if len(sys.argv)<2:
+        print("usage: python %s <img_path>"%sys.argv[0])
+        sys.exit(2)
+
+    predict(sys.argv[1])
