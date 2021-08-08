@@ -9,7 +9,7 @@ from keras.models import load_model
 
 #model = load_model("locard_resnet_b4_e20_1000.hdf5")
 model = load_model("locard_vgg16_b4_e20_1000.hdf5")
-#model = load_model("locard_vgg16_b32_e40_100.hdf5")
+#model = load_model("locard_MobileNetV2_b4_e20_1000.hdf5")
 
 def read_img(test_path,target_size = (224,224)):
     img = cv2.imread(test_path)
