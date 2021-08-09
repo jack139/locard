@@ -4,17 +4,14 @@ import os
 os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 
 import numpy as np
-from keras.applications import ResNet50, VGG16, MobileNetV2
-from keras.models import Model
 from keras.optimizers import Adam, SGD, RMSprop
-from keras.layers import Dense, Dropout, Input, Flatten
 from keras.callbacks import ModelCheckpoint
 from data import dataGenerator
-
+from model import get_model
 
 input_size = (224,224,3)
-batch_size = 32
-steps_per_epoch = 100
+batch_size = 4
+steps_per_epoch = 1000
 epochs = 40
 train_dir = 'data/train'
 train_json = 'data/json'
@@ -26,27 +23,9 @@ val_json = 'data/json'
 train_generator = dataGenerator(train_dir, train_json, batch_size=batch_size, target_size=input_size[:2])
 val_generator = dataGenerator(val_dir, val_json, batch_size=4, target_size=input_size[:2])
 
-
-# create the base pre-trained model
-#base_model = ResNet50(weights='imagenet', input_shape=input_size, include_top=False)
-#base_model = VGG16(weights="imagenet", include_top=False, input_tensor=Input(shape=input_size))
-base_model = MobileNetV2(weights='imagenet', include_top=False, input_tensor=Input(shape=input_size))
-
-# freeze all VGG layers so they will *not* be updated during the
-# training process
-base_model.trainable = False
-# flatten the max-pooling output of VGG
-flatten = base_model.output
-flatten = Flatten()(flatten)
-# construct a fully-connected layer header to output the predicted
-# bounding box coordinates
-bboxHead = Dense(128, activation="relu")(flatten)
-bboxHead = Dense(64, activation="relu")(bboxHead)
-bboxHead = Dense(32, activation="relu")(bboxHead)
-bboxHead = Dense(8, activation="sigmoid")(bboxHead)
-# construct the model we will fine-tune for bounding box regression
-model = Model(inputs=base_model.input, outputs=bboxHead)
-
+# 生成模型
+model_type = 'vgg16'
+model = get_model(model_type)
 
 # initialize the optimizer, compile the model, and show the model
 # summary
@@ -60,7 +39,7 @@ print(model.summary())
 print("[INFO] training bounding box regressor...")
 
 
-model_checkpoint = ModelCheckpoint("locard_MobileNetV2_b%d_e%d_%d.hdf5"%(batch_size,epochs,steps_per_epoch), 
+model_checkpoint = ModelCheckpoint("locard_%s_b%d_e%d_%d.hdf5"%(model_type,batch_size,epochs,steps_per_epoch), 
     monitor='val_loss',verbose=1, save_best_only=True)
 
 model.fit_generator(train_generator,

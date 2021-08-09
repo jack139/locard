@@ -67,4 +67,5 @@ weights/
 locard/
 data/
 *.hdf5
+*.h5
 *.xv

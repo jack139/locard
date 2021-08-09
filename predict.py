@@ -5,12 +5,14 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 
 import numpy as np 
 import cv2
-from keras.models import load_model
+from model import get_model
+#from keras.models import load_model
 from datetime import datetime
 
-#model = load_model("locard_resnet_b4_e20_1000.hdf5")
-model = load_model("locard_vgg16_b4_e20_1000.hdf5")
-#model = load_model("locard_MobileNetV2_b4_e20_1000.hdf5")
+#model = load_model("locard_vgg16_b4_e20_1000.hdf5")
+
+model = get_model('vgg16')
+model.load_weights("locard_weights_vgg16_b4_e20_1000.h5")
 
 def read_img(test_path,target_size = (224,224)):
     img = cv2.imread(test_path)
@@ -29,8 +31,7 @@ def draw_box(test_path, p1, p2):
     cv2.imwrite('data/test_result.jpg', img)
 
 
-def predict(test_path):
-    inputs, h, w = read_img(test_path)
+def predict(inputs, h, w): # h,w 为原始图片的 尺寸
     start_time = datetime.now()
     results = model.predict(inputs)
     print('[Time taken: {!s}]'.format(datetime.now() - start_time))
@@ -51,7 +52,7 @@ def predict(test_path):
 
     print(results)
 
-    draw_box(test_path, p1, p2)
+    return p1, p2
 
 
 if __name__ == '__main__':
@@ -59,4 +60,6 @@ if __name__ == '__main__':
         print("usage: python %s <img_path>"%sys.argv[0])
         sys.exit(2)
 
-    predict(sys.argv[1])
+    inputs, h, w = read_img(sys.argv[1])
+    p1, p2 = predict(inputs, h, w)
+    draw_box(sys.argv[1], p1, p2)
