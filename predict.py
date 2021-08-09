@@ -6,6 +6,7 @@ os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
 import numpy as np 
 import cv2
 from keras.models import load_model
+from datetime import datetime
 
 #model = load_model("locard_resnet_b4_e20_1000.hdf5")
 model = load_model("locard_vgg16_b4_e20_1000.hdf5")
@@ -30,7 +31,9 @@ def draw_box(test_path, p1, p2):
 
 def predict(test_path):
     inputs, h, w = read_img(test_path)
+    start_time = datetime.now()
     results = model.predict(inputs)
+    print('[Time taken: {!s}]'.format(datetime.now() - start_time))
 
     p1 = (
         results[0][0]*w,
