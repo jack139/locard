@@ -12,7 +12,7 @@ from datetime import datetime
 #model = load_model("locard_vgg16_b4_e20_1000.hdf5")
 
 model = get_model('vgg16')
-model.load_weights("locard_weights_vgg16_b4_e20_1000.h5")
+model.load_weights("locard_vgg16_b4_e40_1000.h5")
 
 def read_img(test_path,target_size = (224,224)):
     img = cv2.imread(test_path)
