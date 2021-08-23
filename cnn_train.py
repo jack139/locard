@@ -8,6 +8,7 @@ from keras.optimizers import Adam, SGD, RMSprop
 from keras.callbacks import ModelCheckpoint
 from data import dataGenerator
 from model import get_model
+from metrics import IoU, IoU2
 
 input_size = (224,224,3)
 batch_size = 4
@@ -31,16 +32,15 @@ model = get_model(model_type)
 # summary
 #model.compile(optimizer=RMSprop(lr = 1e-4), loss='mse', metrics = ['mae'])
 opt = Adam(lr=3e-4)
-model.compile(loss="mse", optimizer=opt)
+model.compile(loss="mse", optimizer=opt, metrics=[IoU, IoU2])
 
 print(model.summary())
 
 # train the network for bounding box regression
 print("[INFO] training bounding box regressor...")
 
-
-model_checkpoint = ModelCheckpoint("locard_%s_b%d_e%d_%d.hdf5"%(model_type,batch_size,epochs,steps_per_epoch), 
-    monitor='val_loss',verbose=1, save_best_only=True)
+model_checkpoint = ModelCheckpoint("locard_%s_b%d_e%d_%d.h5"%(model_type,batch_size,epochs,steps_per_epoch), 
+    monitor='val_IoU',verbose=1, save_best_only=True, save_weights_only=True, mode='max')
 
 model.fit_generator(train_generator,
     steps_per_epoch=steps_per_epoch,

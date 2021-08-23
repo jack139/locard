@@ -17,21 +17,27 @@ def get_model(model_type='vgg16', input_size = (224,224,3)):
 
     # freeze all VGG layers so they will *not* be updated during the
     # training process
-    base_model.trainable = False
+    for layer in base_model.layers:
+        layer.trainable = False
     # flatten the max-pooling output of VGG
     flatten = base_model.output
     flatten = Flatten()(flatten)
     # construct a fully-connected layer header to output the predicted
     # bounding box coordinates
-    bboxHead = Dense(1024)(flatten)
-    bboxHead = LeakyReLU(alpha=0.02)(bboxHead)
-    bboxHead = Dropout(0.2)(bboxHead)
-    bboxHead = Dense(256)(bboxHead)
-    bboxHead = LeakyReLU(alpha=0.02)(bboxHead)
-    bboxHead = Dropout(0.2)(bboxHead)
-    bboxHead = Dense(64)(bboxHead)
-    bboxHead = LeakyReLU(alpha=0.02)(bboxHead)
-    bboxHead = Dropout(0.2)(bboxHead)
+    bboxHead = Dense(128, activation="relu")(flatten)
+    bboxHead = Dense(64, activation="relu")(bboxHead)
+    bboxHead = Dense(32, activation="relu")(bboxHead)
+
+    #bboxHead = Dense(1024)(flatten)
+    #bboxHead = LeakyReLU(alpha=0.02)(bboxHead)
+    #bboxHead = Dropout(0.2)(bboxHead)
+    #bboxHead = Dense(256)(bboxHead)
+    #bboxHead = LeakyReLU(alpha=0.02)(bboxHead)
+    #bboxHead = Dropout(0.2)(bboxHead)
+    #bboxHead = Dense(64)(bboxHead)
+    #bboxHead = LeakyReLU(alpha=0.02)(bboxHead)
+    #bboxHead = Dropout(0.2)(bboxHead)
+
     bboxHead = Dense(8, activation="sigmoid")(bboxHead)
     # construct the model we will fine-tune for bounding box regression
     model = Model(inputs=base_model.input, outputs=bboxHead)
