@@ -52,6 +52,11 @@ model.fit_generator(train_generator,
 
 # 解冻base model的参数后再训练
 
+# 数据生成器
+train_generator = dataGenerator(train_dir, train_json, batch_size=batch_size, target_size=input_size[:2])
+val_generator = dataGenerator(val_dir, val_json, batch_size=4, target_size=input_size[:2])
+
+# 解冻的模型
 model = get_model(model_type, freeze=False, weights=None)
 model.load_weights(ckpt_filepath)
 

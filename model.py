@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import numpy as np
-from keras.applications import ResNet50, VGG16, VGG19, Xception
+from keras.applications import ResNet50, VGG16, VGG19, Xception, DenseNet121
 from keras.models import Model
 from keras.layers import Dense, Dropout, Input, Flatten, LeakyReLU
 
@@ -12,6 +12,8 @@ def get_model(model_type='vgg16', input_size = (224,224,3), freeze=False, weight
         base_model = ResNet50(weights=weights, input_shape=input_size, include_top=False)
     elif model_type=='xception':
         base_model = Xception(weights=weights, include_top=False, input_tensor=Input(shape=input_size))
+    elif model_type=='densenet':
+        base_model = DenseNet121(weights=weights, include_top=False, input_tensor=Input(shape=input_size))
     elif model_type=='vgg19':
         base_model = VGG19(weights=weights, include_top=False, input_tensor=Input(shape=input_size))
     else:
@@ -29,6 +31,13 @@ def get_model(model_type='vgg16', input_size = (224,224,3), freeze=False, weight
     flatten = Flatten()(flatten)
     # construct a fully-connected layer header to output the predicted
     # bounding box coordinates
+
+    # DenseNet
+    #bboxHead = Dense(64, activation="relu")(flatten)
+    #bboxHead = Dense(32, activation="relu")(bboxHead)
+    #bboxHead = Dense(16, activation="relu")(bboxHead)
+
+    # VGG
     bboxHead = Dense(1024, activation="relu")(flatten)
     bboxHead = Dense(256, activation="relu")(bboxHead)
     bboxHead = Dense(64, activation="relu")(bboxHead)

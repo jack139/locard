@@ -14,6 +14,8 @@ json_path = 'data/json'
 model = get_model('vgg16', weights=None)
 model.load_weights("locard_vgg16_b32_e10_100_0.94010.h5")
 #model.load_weights("locard_weights_vgg16_b4_e20_1000.h5")
+#model = get_model('densenet', weights=None)
+#model.load_weights('locard_densenet_b32_e10_100_0.82439.h5')
 
 def read_img(test_path,target_size = (224,224)):
     img = cv2.imread(test_path)
@@ -134,4 +136,4 @@ if __name__ == '__main__':
             pred[0][3],
             pred[0][2],
         ]
-        print(IoU(box1, box2))
+        print('IoU = ', IoU(box1, box2))
