@@ -7,15 +7,13 @@ import json
 import numpy as np 
 import cv2
 from model import get_model
-#from keras.models import load_model
 from datetime import datetime
 
 json_path = 'data/json'
 
-#model = load_model("locard_vgg16_b4_e20_1000.hdf5")
-
-model = get_model('vgg16')
-model.load_weights("locard_vgg16_b4_e40_1000.h5")
+model = get_model('vgg16', weights=None)
+model.load_weights("locard_vgg16_b32_e10_100_0.94010.h5")
+#model.load_weights("locard_weights_vgg16_b4_e20_1000.h5")
 
 def read_img(test_path,target_size = (224,224)):
     img = cv2.imread(test_path)
